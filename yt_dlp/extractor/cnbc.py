@@ -85,4 +85,5 @@ class CNBCVideoIE(InfoExtractor):
         return {
             "id": video_id,
             "formats": self._extract_akamai_formats(url, str(video_id)),
+            "thumbnail" : metadata['page']['page']['layout'][1]['columns'][1]['modules'][0]['data']['thumbnail']
         }
