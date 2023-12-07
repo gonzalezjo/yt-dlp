@@ -2,6 +2,7 @@ from .common import InfoExtractor
 from ..utils import smuggle_url, clean_html
 import json
 import re
+from datetime import datetime
 
 
 class CNBCIE(InfoExtractor):
@@ -79,11 +80,20 @@ class CNBCVideoIE(InfoExtractor):
         metadata = json.loads(matched.group(1))
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
 
+        date_format = "%Y-%m-%dT%H:%M:%S%z"
+        upload_date_string = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']
+        dt_object = datetime.strptime(upload_date_string, date_format)
+        timestamp = int(dt_object.timestamp())
+        # print("test test ", timestamp)
+
+
         # import pdb
         # pdb.set_trace()
 
         return {
-            "id": video_id,
+            "id": str(video_id),
             "formats": self._extract_akamai_formats(url, str(video_id)),
-            "thumbnail" : metadata['page']['page']['layout'][1]['columns'][1]['modules'][0]['data']['thumbnail']
+            "thumbnail" : metadata['page']['page']['layout'][1]['columns'][1]['modules'][0]['data']['thumbnail'],
+            "timestamp" : timestamp,
+            "description" : metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['description']
         }
