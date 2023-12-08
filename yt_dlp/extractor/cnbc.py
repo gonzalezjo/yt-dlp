@@ -3,6 +3,7 @@ from ..utils import smuggle_url, clean_html
 import json
 import re
 from datetime import datetime
+from ..utils import unified_timestamp, variadic
 
 
 class CNBCIE(InfoExtractor):
@@ -78,22 +79,29 @@ class CNBCVideoIE(InfoExtractor):
         if not matched:
             raise ValueError("JSON data not found")
         metadata = json.loads(matched.group(1))
+        # assert(isinstance(json, str))
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
 
-        date_format = "%Y-%m-%dT%H:%M:%S%z"
-        upload_date_string = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']
-        dt_object = datetime.strptime(upload_date_string, date_format)
-        timestamp = int(dt_object.timestamp())
-        # print("test test ", timestamp)
+        # upload_date_string = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']
+        # dt_object = datetime.strptime(upload_date_string, date_format)
+        # timestamp = unified_timestamp(upload_date_string)
+
+        # returns = self._json_ld(json.dumps(metadata), str(video_id))
+        # json_ld = self._yield_json_ld(cleaned, str(video_id))
+        info = self._search_json_ld(webpage, str(video_id), default={})
+        info["formats"] = self._extract_akamai_formats(url, str(video_id))
+        info["id"] = str(video_id)
+
 
 
         # import pdb
         # pdb.set_trace()
+        # info = self._search_json_ld(cleaned, str(video_id), default={})
 
-        return {
-            "id": str(video_id),
-            "formats": self._extract_akamai_formats(url, str(video_id)),
-            "thumbnail" : metadata['page']['page']['layout'][1]['columns'][1]['modules'][0]['data']['thumbnail'],
-            "timestamp" : timestamp,
-            "description" : metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['description']
-        }
+
+        # json_ld = json.dumps(metadata)
+
+        # returns = self._json_ld(json_ld, str(video_id))
+        # print(timestamp)
+
+        return info
