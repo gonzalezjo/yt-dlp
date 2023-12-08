@@ -78,6 +78,8 @@ class CNBCVideoIE(InfoExtractor):
             raise ValueError("JSON data not found")
         metadata = json.loads(matched.group(1))
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
+        channel = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['section']['tagNameFormatted']
+        duration = metadata['page']['page']['layout'][1]['columns'][1]['modules'][0]['data']['duration']
 
         # import pdb
         # pdb.set_trace()
@@ -85,4 +87,6 @@ class CNBCVideoIE(InfoExtractor):
         return {
             "id": video_id,
             "formats": self._extract_akamai_formats(url, str(video_id)),
+            "channel" : channel,
+            "duration" : duration,
         }
