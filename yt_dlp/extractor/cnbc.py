@@ -78,8 +78,10 @@ class CNBCVideoIE(InfoExtractor):
             raise ValueError("JSON data not found")
         metadata = json.loads(matched.group(1))
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
-
-
+        upload_date = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']
+        video_status = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['videoStatus']
+        if metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['authorFormattedFull'] != 'NA': 
+            author = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['authorFormattedFull']
 
         import pdb
         pdb.set_trace()
