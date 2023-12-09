@@ -1,41 +1,6 @@
-from .common import InfoExtractor
 import json
-import re
-from datetime import datetime
-from ..utils import clean_html, traverse_obj, unified_timestamp, unified_strdate, variadic
-
-
-class CNBCIE(InfoExtractor):
-    _VALID_URL = r"https?://video\.cnbc\.com/gallery/\?video=(?P<id>[0-9]+)"
-    _TEST = {
-        "url": "http://video.cnbc.com/gallery/?video=3000503714",
-        "info_dict": {
-            "id": "3000503714",
-            "ext": "mp4",
-            "title": "Fighting zombies is big business",
-            "description": "md5:0c100d8e1a7947bd2feec9a5550e519e",
-            "timestamp": 1459332000,
-            "upload_date": "20160330",
-            "uploader": "NBCU-CNBC",
-        },
-        "params": {
-            "skip_download": True,
-        },
-        "skip": "Dead link",
-    }
-
-    def _real_extract(self, url):
-        video_id = self._match_id(url)
-        return {
-            "_type": "url_transparent",
-            "ie_key": "ThePlatform",
-            "url": smuggle_url(
-                "http://link.theplatform.com/s/gZWlPC/media/guid/2408950221/%s?mbr=true&manifest=m3u"
-                % video_id,
-                {"force_smil_url": True},
-            ),
-            "id": video_id,
-        }
+from .common import InfoExtractor
+from ..utils import traverse_obj, unified_strdate
 
 
 class CNBCVideoIE(InfoExtractor):
@@ -77,8 +42,7 @@ class CNBCVideoIE(InfoExtractor):
             )
         )
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
-        # import pdb
-        # pdb.set_trace()
+
         return {
             "id": str(video_id),
             "url": metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0][
@@ -98,5 +62,3 @@ class CNBCVideoIE(InfoExtractor):
                 },
             ),
         }
-
-        return info
