@@ -1675,7 +1675,7 @@ class InfoExtractor:
                     continue
                 else:
                     break
-
+        
         traverse_json_ld(json_ld)
         return filter_dict(info)
 
