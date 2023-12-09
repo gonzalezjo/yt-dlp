@@ -2,7 +2,7 @@ from .common import InfoExtractor
 import json
 import re
 from datetime import datetime
-from ..utils import clean_html, traverse_obj, unified_timestamp, variadic
+from ..utils import clean_html, traverse_obj, unified_timestamp, unified_strdate, variadic
 
 
 class CNBCIE(InfoExtractor):
@@ -19,7 +19,6 @@ class CNBCIE(InfoExtractor):
             "uploader": "NBCU-CNBC",
         },
         "params": {
-            # m3u8 download
             "skip_download": True,
         },
         "skip": "Dead link",
@@ -78,8 +77,8 @@ class CNBCVideoIE(InfoExtractor):
             )
         )
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
-        duration = metadata['page']['page']['layout'][1]['columns'][1]['modules'][0]['data']['duration']
-
+        # import pdb
+        # pdb.set_trace()
         return {
             "id": str(video_id),
             "url": metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0][
@@ -87,6 +86,7 @@ class CNBCVideoIE(InfoExtractor):
             ]["encodings"][0]["url"],
             "formats": self._extract_akamai_formats(url, str(video_id)),
             "channel": self._html_search_regex(r'<div class="ClipPlayer-clipPlayerIntroSection"><[^>]*>([^<]+)<', webpage, 'channel name'),
+            "upload_date": unified_strdate(metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']),
             **traverse_obj(
                 self._search_json_ld(webpage, str(video_id), default={}),
                 {
