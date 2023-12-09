@@ -2,6 +2,8 @@ from .common import InfoExtractor
 from ..utils import smuggle_url, clean_html
 import json
 import re
+from ..utils import (   
+    unified_strdate)
 
 
 class CNBCIE(InfoExtractor):
@@ -78,13 +80,13 @@ class CNBCVideoIE(InfoExtractor):
             raise ValueError("JSON data not found")
         metadata = json.loads(matched.group(1))
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
-        upload_date = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']
+        upload_date = unified_strdate(metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate'])
         # whether the video is restricted or not
         video_status = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['videoStatus']
         author = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['authorFormattedFull']
 
-        #import pdb
-        #pdb.set_trace()
+        import pdb
+        pdb.set_trace()
 
         return_data = {
             "id": video_id,
