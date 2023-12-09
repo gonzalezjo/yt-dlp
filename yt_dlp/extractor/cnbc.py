@@ -79,14 +79,22 @@ class CNBCVideoIE(InfoExtractor):
         metadata = json.loads(matched.group(1))
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
         upload_date = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']
+        # whether the video is restricted or not
         video_status = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['videoStatus']
-        if metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['authorFormattedFull'] != 'NA': 
-            author = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['authorFormattedFull']
+        author = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['authorFormattedFull']
 
-        import pdb
-        pdb.set_trace()
+        #import pdb
+        #pdb.set_trace()
 
-        return {
+        return_data = {
             "id": video_id,
             "formats": self._extract_akamai_formats(url, str(video_id)),
+            "upload_date": upload_date,
+            "video_status": video_status,
         }
+
+        # Conditionally add the author key
+        if author != 'NA':
+            return_data["author"] = author
+
+        return return_data
