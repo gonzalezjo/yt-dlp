@@ -1,9 +1,8 @@
 from .common import InfoExtractor
-from ..utils import smuggle_url, clean_html
 import json
 import re
 from datetime import datetime
-from ..utils import unified_timestamp, variadic
+from ..utils import clean_html, traverse_obj, unified_timestamp, variadic
 
 
 class CNBCIE(InfoExtractor):
@@ -42,23 +41,25 @@ class CNBCIE(InfoExtractor):
 
 class CNBCVideoIE(InfoExtractor):
     _VALID_URL = r"https?://(?:www\.)?cnbc\.com(?P<path>/video/(?:[^/]+/)+(?P<id>[^./?#&]+)\.html)"
-   
-   
+
     _TESTS = [
-    {
-        'url': "https://www.cnbc.com/video/2023/12/07/mcdonalds-just-unveiled-cosmcsits-new-spinoff-brand.html",
-        "info_dict":{
-            "title" : "Here's a first look at McDonald's new spinoff brand, CosMc's",
-            "description" : "McDonald's unveiled its new spinoff brand known as CosMc's this week, announcing that the new brand's first location will open in Bolingbrook, Illinois. CosMc's drive-thru focused menu features brand new lemonades and teas, blended beverages, and cold coffee, as well as a small lineup of food. The burger chain first revealed it was creating CosMc's as a spinoff during its second-quarter earnings call in July.",
-            "thumbnails" : [{'url': 'https://image.cnbcfm.com/api/v1/image/107344192-1701894812493-CosMcsskyHero_2336x1040_hero-desktop.jpg?v=1701894855'}],
-            "duration" : 65.0,
-            "timestamp" : 1701977810,
-            "ext" : "mp4",
-            "id" : '7000325168',
-        },
-        'expected_warnings': ['Unable to download f4m manifest']
-    }
-    
+        {
+            "url": "https://www.cnbc.com/video/2023/12/07/mcdonalds-just-unveiled-cosmcsits-new-spinoff-brand.html",
+            "info_dict": {
+                "title": "Here's a first look at McDonald's new spinoff brand, CosMc's",
+                "description": "McDonald's unveiled its new spinoff brand known as CosMc's this week, announcing that the new brand's first location will open in Bolingbrook, Illinois. CosMc's drive-thru focused menu features brand new lemonades and teas, blended beverages, and cold coffee, as well as a small lineup of food. The burger chain first revealed it was creating CosMc's as a spinoff during its second-quarter earnings call in July.",
+                "thumbnails": [
+                    {
+                        "url": "https://image.cnbcfm.com/api/v1/image/107344192-1701894812493-CosMcsskyHero_2336x1040_hero-desktop.jpg?v=1701894855"
+                    }
+                ],
+                "duration": 65.0,
+                "timestamp": 1701977810,
+                "ext": "mp4",
+                "id": "7000325168",
+            },
+            "expected_warnings": ["Unable to download f4m manifest"],
+        }
     ]
 
     def _real_extract(self, url):
@@ -67,44 +68,33 @@ class CNBCVideoIE(InfoExtractor):
             "https://webql-redesign.cnbcfm.com/graphql",
             display_id,
             query={
-                "query": """{
-                    page(path: "%s") {
-                    vcpsId
-                }
-            }"""
-                % path,
+                "query": """{ page(path: "%s") { vcpsId } }""" % path,
             },
         )["data"]["page"]["vcpsId"]
         webpage = self._download_webpage(url, video_id)
-        cleaned = clean_html(webpage)
-        matched = re.search(r'window\.__s_data=(\{.*?\});', cleaned)
-        if not matched:
-            raise ValueError("JSON data not found")
-        metadata = json.loads(matched.group(1))
-        # assert(isinstance(json, str))
+        metadata = json.loads(
+            self._html_search_regex(
+                r"window\.__s_data=(\{.*?\});", webpage, "video JSON data."
+            )
+        )
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
 
-        # upload_date_string = metadata['page']['page']['layout'][1]['columns'][0]['modules'][0]['data']['uploadDate']
-        # dt_object = datetime.strptime(upload_date_string, date_format)
-        # timestamp = unified_timestamp(upload_date_string)
-
-        # returns = self._json_ld(json.dumps(metadata), str(video_id))
-        # json_ld = self._yield_json_ld(cleaned, str(video_id))
-        info = self._search_json_ld(webpage, str(video_id), default={})
-        info["formats"] = self._extract_akamai_formats(url, str(video_id))
-        info["id"] = str(video_id)
-        
-
-
-
-        # import pdb
-        # pdb.set_trace()
-        # info = self._search_json_ld(cleaned, str(video_id), default={})
-
-
-        # json_ld = json.dumps(metadata)
-
-        # returns = self._json_ld(json_ld, str(video_id))
-        # print(timestamp)
+        return {
+            "id": str(video_id),
+            "url": metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0][
+                "data"
+            ]["encodings"][0]["url"],
+            "formats": self._extract_akamai_formats(url, str(video_id)),
+            **traverse_obj(
+                self._search_json_ld(webpage, str(video_id), default={}),
+                {
+                    "title": "title",
+                    "description": "description",
+                    "duration": "duration",
+                    "timestamp": "timestamp",
+                    "thumbnails": "thumbnails",
+                },
+            ),
+        }
 
         return info
