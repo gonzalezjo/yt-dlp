@@ -31,43 +31,45 @@ class CNBCVideoIE(InfoExtractor):
         {
             "url": "https://www.cnbc.com/video/2023/12/08/jim-cramer-shares-his-take-on-seattles-tech-scene.html",
             "info_dict": {
-                "title": "Jim Cramer shares his take on Seattle's tech scene",
+                "author": "Jim Cramer",
+                "channel": "Mad Money with Jim Cramer",
                 "description": "'Mad Money' host Jim Cramer returns from his trip to the West Coast with insight into the tech scene in Seattle, WA.",
+                "duration": 299.0,
+                "ext": "mp4",
+                "id": "jim-cramer-shares-his-take-on-seattles-tech-scene",
+                "thumbnail": "https://image.cnbcfm.com/api/v1/image/107345481-1702079431MM-B-120823.jpg?v=1702079430",
                 "thumbnails": [
                     {
                         "url": "https://image.cnbcfm.com/api/v1/image/107345481-1702079431MM-B-120823.jpg?v=1702079430"
                     }
                 ],
-                "duration": 299.0,
                 "timestamp": 1702080139,
-                "ext": "mp4",
-                "id": "7000325351",
-                "channel" : "Mad Money with Jim Cramer",
-                "upload_date" : "20231208",
-                "thumbnail": 'https://image.cnbcfm.com/api/v1/image/107345481-1702079431MM-B-120823.jpg?v=1702079430'
+                "title": "Jim Cramer shares his take on Seattle's tech scene",
+                "upload_date": "20231208",
             },
             "expected_warnings": ["Unable to download f4m manifest"],
         },
         {
             "url": "https://www.cnbc.com/video/2023/12/08/the-epicenter-of-ai-is-in-seattle-says-jim-cramer.html",
             "info_dict": {
-                "title": "The epicenter of AI is in Seattle, says Jim Cramer",
+                "author": "Jim Cramer",
+                "channel": "Mad Money with Jim Cramer",
                 "description": "'Mad Money' host Jim Cramer returns from his trip to the West Coast with insight into the tech scene in Seattle, WA.",
+                "duration": 113.0,
+                "ext": "mp4",
+                "id": "the-epicenter-of-ai-is-in-seattle-says-jim-cramer",
+                "thumbnail": "https://image.cnbcfm.com/api/v1/image/107345486-Screenshot_2023-12-08_at_70339_PM.png?v=1702080248",
                 "thumbnails": [
                     {
                         "url": "https://image.cnbcfm.com/api/v1/image/107345486-Screenshot_2023-12-08_at_70339_PM.png?v=1702080248"
                     }
                 ],
-                "duration": 113.0,
                 "timestamp": 1702080535,
-                "ext": "mp4",
-                "id": "7000325353",
-                "channel" : "Mad Money with Jim Cramer",
-                "upload_date" : "20231208",
-                "thumbnail": 'https://image.cnbcfm.com/api/v1/image/107345486-Screenshot_2023-12-08_at_70339_PM.png?v=1702080248'
+                "title": "The epicenter of AI is in Seattle, says Jim Cramer",
+                "upload_date": "20231208",
             },
             "expected_warnings": ["Unable to download f4m manifest"],
-        }
+        },
     ]
 
     def _real_extract(self, url):
@@ -113,9 +115,6 @@ class CNBCVideoIE(InfoExtractor):
                 "uploadDate",
             ),
         )
-
-        # import pdb
-        #pdb.set_trace()
 
         return {
             "author": self._html_search_regex(
