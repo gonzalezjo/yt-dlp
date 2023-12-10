@@ -21,6 +21,9 @@ class CNBCVideoIE(InfoExtractor):
                 "timestamp": 1701977810,
                 "ext": "mp4",
                 "id": "7000325168",
+                "channel" : "News Videos",
+                "upload_date" : "20231207",
+                'thumbnail': 'https://image.cnbcfm.com/api/v1/image/107344192-1701894812493-CosMcsskyHero_2336x1040_hero-desktop.jpg?v=1701894855'
             },
             "expected_warnings": ["Unable to download f4m manifest"],
         }
@@ -42,6 +45,9 @@ class CNBCVideoIE(InfoExtractor):
             )
         )
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
+
+        # import pdb
+        # pdb.set_trace()
 
         return {
             "id": str(video_id),
