@@ -26,6 +26,26 @@ class CNBCVideoIE(InfoExtractor):
                 "thumbnail": 'https://image.cnbcfm.com/api/v1/image/107344192-1701894812493-CosMcsskyHero_2336x1040_hero-desktop.jpg?v=1701894855'
             },
             "expected_warnings": ["Unable to download f4m manifest"],
+        },
+        {
+            "url": "https://www.cnbc.com/video/2023/12/08/the-epicenter-of-ai-is-in-seattle-says-jim-cramer.html",
+            "info_dict": {
+                "title": "The epicenter of AI is in Seattle, says Jim Cramer",
+                "description": "'Mad Money' host Jim Cramer returns from his trip to the West Coast with insight into the tech scene in Seattle, WA.",
+                "thumbnails": [
+                    {
+                        "url": "https://image.cnbcfm.com/api/v1/image/107345486-Screenshot_2023-12-08_at_70339_PM.png?v=1702080248"
+                    }
+                ],
+                "duration": 113.0,
+                "timestamp": 1702080535,
+                "ext": "mp4",
+                "id": "7000325353",
+                "channel" : "Mad Money with Jim Cramer",
+                "upload_date" : "20231208",
+                "thumbnail": 'https://image.cnbcfm.com/api/v1/image/107345486-Screenshot_2023-12-08_at_70339_PM.png?v=1702080248'
+            },
+            "expected_warnings": ["Unable to download f4m manifest"],
         }
     ]
 
@@ -47,7 +67,7 @@ class CNBCVideoIE(InfoExtractor):
         url = metadata["page"]["page"]["layout"][1]["columns"][0]["modules"][0]["data"]["encodings"][0]["url"]
 
         # import pdb
-        # pdb.set_trace()
+        #pdb.set_trace()
 
         return {
             "id": str(video_id),
